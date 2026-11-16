@@ -77,6 +77,7 @@ function restart() {
   weapon.refill();
   hud.setScore(0);
   hud.setAmmo(weapon.state.mag, weapon.state.reserve);
+  console.log('[tactical-fps] Session restarted, targets reset.');
 }
 
 function onLockChange(locked) {
@@ -126,7 +127,9 @@ function shoot(spread) {
     }
   }
   weapon.pullTrigger();
-  player.recoil(0.009 + random() * 0.004, (random() * 2 - 1) * 0.004);
+  // Responsive tactical recoil dampening based on movement state
+  const recoilMult = player.state.crouching ? 0.6 : 1.0;
+  player.recoil((0.009 + random() * 0.004) * recoilMult, (random() * 2 - 1) * 0.004 * recoilMult);
   hud.setAmmo(weapon.state.mag, weapon.state.reserve);
   return true;
 }

@@ -18,8 +18,8 @@ export function createTargets(scene) {
   const headMaterial = new THREE.MeshStandardMaterial({ color: new THREE.Color(PALETTE.accent), roughness: 0.45, metalness: 0.1 });
   const standMaterial = new THREE.MeshStandardMaterial({ color: new THREE.Color(PALETTE.hairline), roughness: 0.85 });
   const torsoGeometry = new THREE.BoxGeometry(0.52, 0.78, 0.3);
-  const headGeometry = new THREE.SphereGeometry(0.155, 16, 12);
-  const postGeometry = new THREE.BoxGeometry(0.1, 0.55, 0.1);
+  const headGeometry = new THREE.SphereGeometry(0.155, 16, 12);\r
+  const postGeometry = new THREE.BoxGeometry(0.1, 0.55, 0.1);\r
   const baseGeometry = new THREE.BoxGeometry(0.5, 0.08, 0.5);
 
   const items = [];
@@ -42,73 +42,73 @@ export function createTargets(scene) {
     head.position.y = 1.53;
     head.userData.part = 'head';
     group.add(base, post, torso, head);
-    group.traverse((mesh) => {
-      if (mesh.isMesh) {
-        mesh.castShadow = true;
-        mesh.receiveShadow = true;
-      }
+    group.traverse((mesh) => {\r
+      if (mesh.isMesh) {\r
+        mesh.castShadow = true;\r
+        mesh.receiveShadow = true;\r
+      }\r
     });
     scene.add(group);
 
     const item = { group, torso, head, health: HEALTH, alive: true, fall: 0, respawnAt: 0, phase: index * 1.7, home: new THREE.Vector3(x, 0, z) };
-    torso.userData.target = item;
-    head.userData.target = item;
-    hitMeshes.push(torso, head);
+    torso.userData.target = item;\r
+    head.userData.target = item;\r
+    hitMeshes.push(torso, head);\r
     items.push(item);
   }
 
-  function damage(mesh, amount) {
-    const item = mesh.userData.target;
-    if (!item || !item.alive) return false;
-    item.health -= amount;
-    if (item.health > 0) return false;
-    item.alive = false;
-    item.fall = 0;
-    item.respawnAt = now + RESPAWN_SECONDS;
-    return true;
+  function damage(mesh, amount) {\r
+    const item = mesh.userData.target;\r
+    if (!item || !item.alive) return false;\r
+    item.health -= amount;\r
+    if (item.health > 0) return false;\r
+    item.alive = false;\r
+    item.fall = 0;\r
+    item.respawnAt = now + RESPAWN_SECONDS;\r
+    return true;\r
   }
 
-  function step(dt, time) {
-    now = time;
-    for (const item of items) {
-      if (item.alive) {
-        item.group.rotation.y = Math.sin(time * 0.9 + item.phase) * 0.12;
-        item.group.position.y = 0;
-        continue;
-      }
-      item.fall = Math.min(1, item.fall + dt / FALL_SECONDS);
-      item.group.rotation.x = -item.fall * 1.45;
-      item.group.position.y = -item.fall * 0.08;
-      if (time >= item.respawnAt) {
-        item.alive = true;
-        item.health = HEALTH;
-        item.fall = 0;
-        item.group.rotation.x = 0;
-        item.group.position.y = 0;
-      }
-    }
+  function step(dt, time) {\r
+    now = time;\r
+    for (const item of items) {\r
+      if (item.alive) {\r
+        item.group.rotation.y = Math.sin(time * 0.9 + item.phase) * 0.12;\r
+        item.group.position.y = 0;\r
+        continue;\r
+      }\r
+      item.fall = Math.min(1, item.fall + dt / FALL_SECONDS);\r
+      item.group.rotation.x = -item.fall * 1.45;\r
+      item.group.position.y = -item.fall * 0.08;\r
+      if (time >= item.respawnAt) {\r
+        item.alive = true;\r
+        item.health = HEALTH;\r
+        item.fall = 0;\r
+        item.group.rotation.x = 0;\r
+        item.group.position.y = 0;\r
+      }\r
+    }\r
   }
 
-  return {
-    items,
-    hitMeshes,
-    damage,
-    step,
-    remaining() {
-      return items.filter((item) => item.alive).length;
-    },
-    aimPoint(index) {
-      const item = items[index % items.length];
-      return new THREE.Vector3(item.group.position.x, item.torso.position.y, item.group.position.z);
-    },
-    reset() {
-      for (const item of items) {
-        item.alive = true;
-        item.health = HEALTH;
-        item.fall = 0;
-        item.group.rotation.set(0, 0, 0);
-        item.group.position.copy(item.home);
-      }
-    },
-  };
+  return {\r
+    items,\r
+    hitMeshes,\r
+    damage,\r
+    step,\r
+    remaining() {\r
+      return items.filter((item) => item.alive).length;\r
+    },\r
+    aimPoint(index) {\r
+      const item = items[index % items.length];\r
+      return new THREE.Vector3(item.group.position.x, item.torso.position.y, item.group.position.z);\r
+    },\r
+    reset() {\r
+      for (const item of items) {\r
+        item.alive = true;\r
+        item.health = HEALTH;\r
+        item.fall = 0;\r
+        item.group.rotation.set(0, 0, 0);\r
+        item.group.position.copy(item.home);\r
+      }\r
+    },\r
+  };\r
 }
